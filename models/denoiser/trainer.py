@@ -195,11 +195,13 @@ class DenoiserTrainer:
     def save(self, file_name, epoch, total_iter):
         state = {
             "denoiser": self.denoiser.state_dict_without_clip(),
-            "optim": self.optim.state_dict(),
-            "lr_scheduler": self.lr_scheduler.state_dict(),
             "epoch": epoch,
             "total_iter": total_iter,
         }
+        if hasattr(self, "optim"):
+            state["optim"] = self.optim.state_dict()
+        if hasattr(self, "lr_scheduler"):
+            state["lr_scheduler"] = self.lr_scheduler.state_dict()
         torch.save(state, file_name)
 
 
