@@ -25,10 +25,10 @@ def load_vae(vae_opt):
     return model
 
 
-def load_denoiser(opt, vae_dim):
+def load_denoiser(opt, vae_dim, ckpt_name='net_best_fid.tar'):
     print(f'Loading Denoiser Model {opt.name}')
     denoiser = Denoiser(opt, vae_dim)
-    ckpt = torch.load(pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name, 'model', 'net_best_fid.tar'),
+    ckpt = torch.load(pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name, 'model', ckpt_name),
                             map_location='cpu')
     missing_keys, unexpected_keys = denoiser.load_state_dict(ckpt["denoiser"], strict=False)
     assert len(unexpected_keys) == 0
@@ -38,6 +38,7 @@ def load_denoiser(opt, vae_dim):
 
 if __name__ == '__main__':
     opt = arg_parse(False)
+    ckpt = opt.ckpt
     vae_name = get_opt(pjoin(opt.checkpoints_dir, opt.dataset_name, opt.name, 'opt.txt'), opt.device).vae_name
     vae_opt = get_opt(pjoin(opt.checkpoints_dir, opt.dataset_name, vae_name, 'opt.txt'), opt.device)
 
@@ -52,11 +53,11 @@ if __name__ == '__main__':
     dataset_opt_path = f"checkpoints/{opt.dataset_name}/Comp_v6_KLD005/opt.txt"
     wrapper_opt = get_opt(dataset_opt_path, torch.device('cuda'))
     eval_wrapper = EvaluatorModelWrapper(wrapper_opt)
-    eval_val_loader, _ = get_dataset_motion_loader(dataset_opt_path, 32, 'test', device=opt.device)
+    eval_val_loader, _ = get_dataset_motion_loader(dataset_opt_path, 32, 'kw_splits/test-wo-violence', device=opt.device)
 
     # models & noise scheduler
     vae_model = load_vae(vae_opt).to(opt.device)
-    denoiser = load_denoiser(opt, vae_opt.latent_dim).to(opt.device)
+    denoiser = load_denoiser(opt, vae_opt.latent_dim, ckpt).to(opt.device)
     scheduler = DDIMScheduler(
         num_train_timesteps=opt.num_train_timesteps,
         beta_start=opt.beta_start,

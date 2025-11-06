@@ -69,14 +69,14 @@ if __name__ == '__main__':
     # evaluation setup
     wrapper_opt = get_opt(opt.dataset_opt_path, torch.device('cuda'))
     eval_wrapper = EvaluatorModelWrapper(wrapper_opt)
-    eval_val_loader, _ = get_dataset_motion_loader(opt.dataset_opt_path, 32, 'val', device=opt.device)
+    eval_val_loader, _ = get_dataset_motion_loader(opt.dataset_opt_path, 32, 'kw_splits/val-wo-violence', device=opt.device)
 
     # dataset & dataloader
     mean = np.load(pjoin(wrapper_opt.meta_dir, 'mean.npy'))
     std = np.load(pjoin(wrapper_opt.meta_dir, 'std.npy'))
 
-    train_split_file = pjoin(opt.data_root, 'train.txt')
-    val_split_file = pjoin(opt.data_root, 'val.txt')
+    train_split_file = pjoin(opt.data_root, 'kw_splits/train-wo-violence.txt')
+    val_split_file = pjoin(opt.data_root, 'kw_splits/val-wo-violence.txt')
 
     train_dataset = Text2MotionDataset(opt, mean, std, train_split_file)
     val_dataset = Text2MotionDataset(opt, mean, std, val_split_file)

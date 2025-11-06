@@ -62,6 +62,9 @@ def arg_parse(is_train=False):
     parser.add_argument("--log_every", default=10, type=int, help="iter log frequency")
     parser.add_argument("--save_latest", default=500, type=int, help="iter save latest model frequency")
     parser.add_argument("--eval_every_e", default=10, type=int, help="save eval results every n epoch")
+    
+    ## Custom
+    parser.add_argument('--ckpt', type=str, default='net_best_fid.tar', help='checkpoint file name to be loaded')
 
     opt = parser.parse_args()
     opt.classifier_free_guidance = opt.cond_scale > 1.0
